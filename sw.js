@@ -1,5 +1,5 @@
 // Bump version to force cache bust — clears all old cached files
-const CACHE = 'nexus-v3';
+const CACHE = 'nexus-v4';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
