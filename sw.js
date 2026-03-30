@@ -1,24 +1,31 @@
-// Bump version to force cache bust — clears all old cached files
-const CACHE = 'nexus-v4';
-const ASSETS = ['./', './index.html', './manifest.json'];
+// v5 — bump version to force fresh install and cache icons
+const CACHE = 'nexus-v5';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
+];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-  self.skipWaiting(); // activate immediately without waiting for old SW to die
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
+  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
-  // Delete ALL old caches
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // Network-first: always try fresh, fall back to cache
+  // Network-first: always try fresh, fall back to cache for offline
   e.respondWith(
     fetch(e.request)
       .then(res => {
